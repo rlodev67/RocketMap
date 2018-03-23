@@ -53,7 +53,7 @@ if not (args.verbose):
 
 formatter = ColoredFormatter(
     '%(log_color)s [%(asctime)s] [%(threadName)16s] [%(module)14s]' +
-        ' [%(levelname)8s] %(message)s',
+    ' [%(levelname)8s] %(message)s',
     datefmt='%m-%d %H:%M:%S',
     reset=True,
     log_colors={

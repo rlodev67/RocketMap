@@ -1,3 +1,4 @@
+/*global getPokemonRawIconUrl*/
 /* Main stats page */
 var rawDataIsLoading = false
 

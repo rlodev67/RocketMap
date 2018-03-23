@@ -12,6 +12,7 @@ from requests.exceptions import HTTPError
 log = logging.getLogger(__name__)
 log.setLevel('INFO')
 
+
 def check_auth(args, request, user_auth_code_cache):
     if args.user_auth_service == "Discord":
         host = args.uas_host_override
@@ -22,8 +23,8 @@ def check_auth(args, request, user_auth_code_cache):
         if args.uas_discord_required_guilds:
             if not valid_discord_guild(request, user_auth_code_cache, args):
                 return redirect_to_discord_guild_invite(args)
-          if args.uas_discord_required_roles and not valid_discord_guild_role(
-              request, user_auth_code_cache, args):
+            if args.uas_discord_required_roles and not valid_discord_guild_role(
+                request, user_auth_code_cache, args):
                 return redirect_to_discord_guild_invite(args)
     return False
 

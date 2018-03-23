@@ -464,8 +464,8 @@ def get_args():
                               'data on failure.'),
                         type=int, default=3)
     parser.add_argument('-whct', '--wh-connect-timeout',
-                         help=('Connect timeout (in seconds) for webhook ' +
-                               'requests.'),
+                        help=('Connect timeout (in seconds) for webhook' +
+                              ' requests.'),
                         type=float, default=1.0)
     parser.add_argument('-whrt', '--wh-read-timeout',
                         help=('Read timeout (in seconds) for webhook ' +

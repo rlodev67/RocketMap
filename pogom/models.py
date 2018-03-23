@@ -42,7 +42,7 @@ from pgoapi.protos.pogoprotos.map.weather.gameplay_weather_pb2 import (
 from pgoapi.protos.pogoprotos.map.weather.weather_alert_pb2 import (
     WeatherAlert)
 from pgoapi.protos.pogoprotos.networking.responses\
-.get_map_objects_response_pb2 import GetMapObjectsResponse
+         .get_map_objects_response_pb2 import GetMapObjectsResponse
 
 log = logging.getLogger(__name__)
 
@@ -2544,7 +2544,7 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                                     raids[f.id]['pokemon_id'] is not None):
 
                             current_weather = (
-                                weather[s2_cell_id]['gameplay_weather'] \
+                                weather[s2_cell_id]['gameplay_weather']
                                 if weather and s2_cell_id in weather else None)
                             wh_raid = raids[f.id].copy()
                             wh_raid.update({
@@ -2994,7 +2994,7 @@ def clean_db_loop(args):
                 if args.db_cleanup_forts > 0:
                     db_clean_forts(args.db_cleanup_forts)
 
-                #C lean weather... only changes at full hours anyway...
+                # Clean weather... only changes at full hours anyway...
                 query = (Weather
                          .delete()
                          .where((Weather.last_updated <

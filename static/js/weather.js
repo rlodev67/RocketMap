@@ -1,3 +1,4 @@
+ /*global map jsts*/
 /* eslint no-unused-vars: "off" */
 // Globales variables
 const alertTexts = {

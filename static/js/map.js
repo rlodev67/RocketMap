@@ -1,3 +1,4 @@
+/*global getPokemonRawIconUrl*/
 //
 // Global map.js variables
 //

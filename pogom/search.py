@@ -101,7 +101,7 @@ def switch_status_printer(display_type, current_page, mainlog,
 
 # Thread to print out the status of each worker.
 def status_printer(threadStatus, account_queue, account_captchas,
-                   account_failures, logmode, hash_key,key_scheduler):
+                   account_failures, logmode, hash_key, key_scheduler):
 
     if (logmode == 'logs'):
         display_type = ['logs']
@@ -310,7 +310,7 @@ def print_account_stats(rows, thread_status, account_queue,
 
     # Print table header.
     row_tmpl = ('{:7} | {:' + str(userlen) + '} | {:4} | {:7} | {:3} |' +
-                ' {:>8} | {:23} | {:14}' | {:>10}')
+                ' {:>8} | {:23} | {:14} | {:>10}')
     rows.append(row_tmpl.format('Status', 'Username', 'Warn',
                                 'Blind', 'Lvl', 'XP', 'Enc/Thr/Cap/Spn',
                                 'Inventory', 'Walked'))
@@ -835,7 +835,7 @@ def update_total_stats(threadStatus, last_account_status):
     busy_count = 0
     current_accounts = Set()
     for tstatus in threadStatus.itervalues():
-        if tstatus.get('type', '') =='Worker':
+        if tstatus.get('type', '') == 'Worker':
 
             is_active = tstatus.get('active', False)
             if is_active:
@@ -1077,17 +1077,18 @@ def search_worker_thread(args, account_queue, account_sets, account_failures,
                                        account, 'rest interval')
                         break
 
-                # Let account rest if it got blind 
+                # Let account rest if it got blind
                 # (although resting won't heal it unfortunately.)
                 if pgacc.rareless_scans is not None:
-                    prev_sbanned = (pgacc.shadowbanned 
-                                    if pgacc.shadowbanned is not None 
+                    prev_sbanned = (pgacc.shadowbanned
+                                    if pgacc.shadowbanned is not None
                                     else False)
-                    pgacc.shadowbanned = pgacc.rareless_scans >= args.rareless_scans_threshold
+                    pgacc.shadowbanned = (
+                        pgacc.rareless_scans >= args.rareless_scans_threshold)
                     if not prev_sbanned and pgacc.shadowbanned:
                         if args.rotate_blind:
                             status['message'] = (
-                                ('Account {} has become blind ({} ' + 
+                                ('Account {} has become blind ({} ' +
                                  'rareless scans). Rotating out.').format(
                                     account['username'], pgacc.rareless_scans))
                             log.info(status['message'])
@@ -1096,7 +1097,8 @@ def search_worker_thread(args, account_queue, account_sets, account_failures,
                             break
                         else:
                             log.info(
-                                ("Account {} has become blind ({} rareless scans).")
+                                ('Account {} has become ' +
+                                 'blind ({} rareless scans).')
                                 .format(account['username'],
                                         pgacc.rareless_scans))
                     elif prev_sbanned and not pgacc.shadowbanned:

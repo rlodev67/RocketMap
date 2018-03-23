@@ -1281,7 +1281,7 @@ function isMobileDevice() {
 function cssPercentageCircle(text, value, perfectVal, goodVal, okVal, mehVal) {
     // Ring color
     var ringColor
-    if (value == perfectVal) {
+    if (value === perfectVal) {
         ringColor = 'lime'
     } else if (value >= goodVal) {
         ringColor = 'green'
@@ -1303,7 +1303,7 @@ function cssPercentageCircle(text, value, perfectVal, goodVal, okVal, mehVal) {
                               linear-gradient(90deg, Gainsboro 50%, transparent 50%)');`
     } else {
         circleStyles = `background-color: ${ringColor};
-            background-image: linear-gradient(${deg-90}deg, transparent 50%, ${ringColor} 50%),
+            background-image: linear-gradient(${deg - 90}deg, transparent 50%, ${ringColor} 50%),
                               linear-gradient(90deg, Gainsboro 50%, transparent 50%)');`
     }
 

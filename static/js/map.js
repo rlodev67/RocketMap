@@ -324,7 +324,7 @@ function initMap() { // eslint-disable-line no-unused-vars
     const showSearchMarker = Store.get('showSearchMarker')
     const showLocationMarker = Store.get('showLocationMarker')
     const isLocationMarkerMovable = Store.get('isLocationMarkerMovable')
-    
+
     if (showSearchMarker) {
         // Whether marker is draggable or not is set in createSearchMarker().
         searchMarker = createSearchMarker()
@@ -718,7 +718,7 @@ function pokemonLabel(item) {
         var levelCircle = cssPercentageCircle(`Lvl<br>${pokemonLevel}`, pokemonLevel, 35, 30, 20, 10)
 
         contentstring += `
-          <div class='pokemon container'>
+            <div class='pokemon container'>
             <div class='pokemon container content-left'>
               <div>
                 <img class='pokemon sprite' src='${pokemonIcon}'>
@@ -765,34 +765,34 @@ function pokemonLabel(item) {
         </div>
       </div>`
     } else if (!showStats && cp !== null && cpMultiplier !== null) {
-                contentstring += `
-              <div class='pokemon container'>
+        contentstring += `
+            <div class='pokemon container'>
                 <div class='pokemon container content-left'>
-                  <div>
-                    <img class='pokemon sprite' src='${pokemonIcon}'>
-                    <div class='pokemon links'>
-                      <i class='fa fa-lg fa-fw fa-eye-slash'></i> <a href='javascript:excludePokemon(${id}, "${encounterId}")'>${hideLabel}</a>
+                    <div>
+                        <img class='pokemon sprite' src='${pokemonIcon}'>
+                        <div class='pokemon links'>
+                          <i class='fa fa-lg fa-fw fa-eye-slash'></i> <a href='javascript:excludePokemon(${id}, "${encounterId}")'>${hideLabel}</a>
+                        </div>
+                        <div class='pokemon links'>
+                          <i class='fa fa-lg fa-fw fa-bullhorn'></i> <a href='javascript:notifyAboutPokemon(${id}, "${encounterId}")'>${notifyLabel}</a>
+                        </div>
+                        <div class='pokemon links'>
+                          <i class='fa fa-lg fa-fw fa-trash-o'></i> <a href='javascript:removePokemonMarker("${encounterId}")'>Remove</a>
+                        </div>
                     </div>
-                    <div class='pokemon links'>
-                      <i class='fa fa-lg fa-fw fa-bullhorn'></i> <a href='javascript:notifyAboutPokemon(${id}, "${encounterId}")'>${notifyLabel}</a>
+                </div>
+                <div class='pokemon container content-right'>
+                    <div>
+                        <div class='pokemon disappear'>
+                            <span class='label-countdown' disappears-at='${disappearTime}'>00m00s</span> left (${moment(disappearTime).format('HH:mm')})
+                        </div>
+                        <div class='pokemon'>
+                            <span class='pokemon navigate'><a href='javascript:void(0);' onclick='javascript:openMapDirections(${latitude},${longitude});' title='Open in Google Maps'>${latitude.toFixed(6)}, ${longitude.toFixed(7)}</a></span>
+                        </div>
+                        <div id='scoutInfo${encounterIdLong}' class='pokemon scoutinfo'></div>
                     </div>
-                    <div class='pokemon links'>
-                      <i class='fa fa-lg fa-fw fa-trash-o'></i> <a href='javascript:removePokemonMarker("${encounterId}")'>Remove</a>
-                    </div>
-                  </div>
-              </div>
-              <div class='pokemon container content-right'>
-                <div>
-                  <div class='pokemon disappear'>
-                    <span class='label-countdown' disappears-at='${disappearTime}'>00m00s</span> left (${moment(disappearTime).format('HH:mm')})
-                  </div>
-                  <div class='pokemon'>
-                    <span class='pokemon navigate'><a href='javascript:void(0);' onclick='javascript:openMapDirections(${latitude},${longitude});' title='Open in Google Maps'>${latitude.toFixed(6)}, ${longitude.toFixed(7)}</a></span>
-                  </div>
-                  <div id='scoutInfo${encounterIdLong}' class='pokemon scoutinfo'></div>
-              </div>
-            </div>
-          </div>`
+                </div>
+            </div>`
         } else {
             contentstring += `
               <div class='pokemon container'>
@@ -904,7 +904,7 @@ function gymLabel(gym, includeMembers = true) {
 
         if (isRaidStarted) {
             // Use Pokémon-specific image.
-            var pokemon_icon = get_pokemon_raw_icon_url(raid)
+            var pokemonIcon = get_pokemon_raw_icon_url(raid)
             if (raid.pokemon_id !== null) {
                 image = `
                     <div class='raid container'>
@@ -1283,7 +1283,7 @@ function getNotifyPerfectionPokemons(pokemonList) {
     })
 
     return notifyPerfectionPkmn
-  }
+}
 
 function customizePokemonMarker(marker, item, skipNotification) {
     var notifyText = getNotifyText(item)
@@ -1590,7 +1590,7 @@ function clearStaleMarkers() {
         const excludedRarity = excludedRaritiesList[excludedRarityOption]
         const pokemonRarity = getPokemonRarity(pokemon['pokemon_id'])
         const isRarityExcluded = excludedRarity.indexOf(pokemonRarity) !== -1
-    const isNotifyPkmn = isNotifyPoke(pokemon)
+        const isNotifyPkmn = isNotifyPoke(pokemon)
 
         if (isPokeExpired || (isPokeExcluded && !isNotifyPkmn) || (isRarityExcluded && !isNotifyPkmn)) {
             const oldMarker = pokemon.marker
@@ -1653,8 +1653,8 @@ function showInBoundsMarkers(markers, type) {
             } else if (type == 's2cell') {
                 if (map.getBounds().intersects(getS2CellBounds(item))) {
                     show = true
-                 }
-             }
+                }
+            }
         }
 
         // Marker has an associated range.
@@ -1775,9 +1775,9 @@ function loadRawData() {
                 'hideMethod': 'fadeOut'
             }
         },
-        success: function(data) {
-          if (data.auth_redirect) {
-            window.location = data.auth_redirect
+        success: function (data) {
+            if (data.auth_redirect) {
+                window.location = data.auth_redirect
           }
         },
         complete: function () {
@@ -2522,7 +2522,7 @@ function getSidebarGymMember(pokemon) {
         absoluteTime = '<div class="gym pokemon">(' + deploymentTime.format('Do MMM HH:mm') + ')</div>'
     }
 
-   var pokemonImage = get_pokemon_raw_icon_url(pokemon)
+    var pokemonImage = get_pokemon_raw_icon_url(pokemon)
     return `
                     <tr onclick=toggleGymPokemonDetails(this)>
                         <td width="30px">

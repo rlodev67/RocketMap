@@ -35,14 +35,16 @@ def get_account(args, account_queue, status):
             while not account:
                 accounts = pgpool_request_accounts(args, count=1)
                 if not accounts:
-                    msg = "Could not request account from PGPool (none left?)." +
-                          "Retrying in 30 seconds."
+                    msg = (
+                        "Could not request account from PGPool (none left?)."
+                        "Retrying in 30 seconds.")
                     status['message'] = msg
                     log.warning(msg)
                     time.sleep(30)
                 else:
                     account = accounts[0]
-            log.info("Successfully requested account {} from PGPool.".format(account['username']))
+            log.info("Successfully requested account {} from PGPool.".format(
+                account['username']))
         return {
             'username': account['username'],
             'password': account['password'],
@@ -131,15 +133,16 @@ def reset_account(account):
 def log_hatched_egg(pgacc, hatched_egg):
     p = hatched_egg['hatched_pokemon']
     iv = float(
-        p.individual_attack + p.individual_defense + p.individual_stamina) / 45 * 100
+        p.individual_attack + p.individual_defense +
+        p.individual_stamina) / 45 * 100
     pname = get_pokemon_name(p.pokemon_id)
     km = hatched_egg['egg_km_walked']
     xp = hatched_egg['experience_awarded']
     candy = hatched_egg['candy_awarded']
     dust = hatched_egg['stardust_awarded']
     pgacc.log_info(
-        u"Hatched {:.1f}% {} from {}km egg for {} XP, {} candy, {} dust.".format(
-            iv, pname, km, xp, candy, dust))
+        (u"Hatched {:.1f}% {} from {}km egg for {} XP, {} candy, {} dust.")
+        .format(iv, pname, km, xp, candy, dust))
 
 
 def can_spin(account, max_h_spins):

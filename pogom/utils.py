@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import urllib
-import urlparse
 from threading import Thread
 
 import configargparse
@@ -14,7 +12,6 @@ import random
 import time
 import socket
 import struct
-import hashlib
 import psutil
 import subprocess
 import requests
@@ -586,7 +583,7 @@ def get_args():
                         help='Client Secret for user external authentication.')
     parser.add_argument('-uasho', '--uas-host-override', default=None,
                         help='Host override for user external authentication.')
-    parser.add_argument('-uasdrg', '--uas-discord-required-guilds', 
+    parser.add_argument('-uasdrg', '--uas-discord-required-guilds',
                         default=None,
                         help=('Required Discord Guild(s) for user ' +
                               'external authentication.'))
@@ -875,7 +872,7 @@ def get_args():
         if args.pgpool_url is None:
             if len(args.accounts) == 0:
                 print(sys.argv[0] +
-                      ': Error: no accounts specified. Use -a, ' + 
+                      ': Error: no accounts specified. Use -a, ' +
                       '-u, and -p or ' +
                       '--accountcsv to add accounts. Or use ' +
                       '-pgpu/--pgpool-url to ' +

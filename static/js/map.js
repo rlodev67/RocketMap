@@ -1193,7 +1193,7 @@ function getNotifyText(item) {
     var find = ['<prc>', '<pkm>', '<atk>', '<def>', '<sta>', '<lvl>']
     iv = Math.round(iv)
     var pokemonlevel = (item['cp_multiplier'] !== null) ? getPokemonLevel(item['cp_multiplier']) : 0
-    var replace = [((iv) ? iv : ''), item['pokemon_name'], item['individual_attack'],
+    var replace = [(iv || ''), item['pokemon_name'], item['individual_attack'],
         item['individual_defense'], item['individual_stamina'], pokemonlevel]
     const showStats = Store.get('showPokemonStats')
     var ntitle = repArray(((showStats && iv) ? notifyIvTitle : notifyNoIvTitle), find, replace)
@@ -1780,7 +1780,7 @@ function loadRawData() {
         success: function (data) {
             if (data.auth_redirect) {
                 window.location = data.auth_redirect
-          }
+            }
         },
         complete: function () {
             rawDataIsLoading = false

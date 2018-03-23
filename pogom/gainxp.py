@@ -104,7 +104,7 @@ def is_ditto(args, pgacc, p):
     catch_result = catch(pgacc, p.encounter_id, p.spawn_point_id)
     if catch_result['catch_status'] == 'success':
         if int(catch_result['pid']) == DITTO_POKEDEX_ID:
-            logmsg = u'GXP: Successfully caught a Ditto disguised ' +
+            logmsg = u'GXP: Successfully caught a Ditto disguised '\
             'as {}! Needed {} attempts.'
             captured_pokemon_name = get_pokemon_name(DITTO_POKEDEX_ID)
             got_ditto = True

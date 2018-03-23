@@ -37,9 +37,12 @@ from .account import (pokestop_spinnable, spin_pokestop,
                       incubate_eggs, setup_mrmime_account,
                       encounter_pokemon_request, clear_pokemon)
 from .proxy import get_new_proxy
-from pgoapi.protos.pogoprotos.map.weather.gameplay_weather_pb2 import *
-from pgoapi.protos.pogoprotos.map.weather.weather_alert_pb2 import *
-from pgoapi.protos.pogoprotos.networking.responses.get_map_objects_response_pb2 import *
+from pgoapi.protos.pogoprotos.map.weather.gameplay_weather_pb2 import (
+    GameplayWeather)
+from pgoapi.protos.pogoprotos.map.weather.weather_alert_pb2 import (
+    WeatherAlert)
+from pgoapi.protos.pogoprotos.networking.responses\
+.get_map_objects_response_pb2 import GetMapObjectsResponse
 
 log = logging.getLogger(__name__)
 
@@ -48,6 +51,7 @@ flaskDb = FlaskDB()
 cache = TTLCache(maxsize=100, ttl=60 * 5)
 
 db_schema_version = 29
+
 
 class MyRetryDB(RetryOperationalError, PooledMySQLDatabase):
     pass
@@ -357,10 +361,10 @@ class Pokestop(LatLongModel):
 
     @staticmethod
     def get_stop_by_cord(lat, long):
-        query = Pokestop.select(Pokestop.pokestop_id, 
+        query = Pokestop.select(Pokestop.pokestop_id,
                                 Pokestop.latitude, Pokestop.longitude)
         query = (query.where(
-            ((Pokestop.latitude == lat) & 
+            ((Pokestop.latitude == lat) &
              (Pokestop.longitude == long))).dicts())
         pokestops = []
         for p in query:
@@ -1865,7 +1869,7 @@ class Weather(BaseModel):
     severity = SmallIntegerField(null=True, index=True)
     warn_weather = SmallIntegerField(null=True, index=True)
     world_time = SmallIntegerField(null=True, index=True)
-    last_updated = DateTimeField(default=datetime.utcnow, 
+    last_updated = DateTimeField(default=datetime.utcnow,
                                  null=True, index=True)
 
     @staticmethod
@@ -1880,11 +1884,11 @@ class Weather(BaseModel):
 
     @staticmethod
     def get_weather_by_location(swLat, swLng, neLat, neLng, alert):
-        # We can filter by the center of a cell, 
+        # We can filter by the center of a cell,
         # this deltas can expand the viewport bounds
-        # So cells with center outside the viewport, 
+        # So cells with center outside the viewport,
         # but close to it can be rendered
-        # otherwise edges of cells that intersects 
+        # otherwise edges of cells that intersects
         # with viewport won't be rendered
         lat_delta = 0.15
         lng_delta = 0.4
@@ -2239,9 +2243,9 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
             # Catch pokemon to check for Ditto if --gain-xp enabled
             # Original code by voxx!
             have_balls = pgacc.inventory_balls > 0
-            if (args.gain_xp and not pgacc.get_stats('level') >= 30 
-                and pokemon_id in DITTO_CANDIDATES_IDS
-                and have_balls):
+            if ((args.gain_xp and not pgacc.get_stats('level') >= 30
+                 and pokemon_id in DITTO_CANDIDATES_IDS
+                 and have_balls)):
                 if is_ditto(args, pgacc, p):
                     pokemon_id = 132
 
@@ -2539,8 +2543,9 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                                     'raid' in args.wh_types and
                                     raids[f.id]['pokemon_id'] is not None):
 
-                            current_weather = weather[s2_cell_id]['gameplay_weather'] \
-                                if weather and s2_cell_id in weather else None
+                            current_weather = (
+                                weather[s2_cell_id]['gameplay_weather'] \
+                                if weather and s2_cell_id in weather else None)
                             wh_raid = raids[f.id].copy()
                             wh_raid.update({
                                 'gym_id': b64_gym_id,
@@ -2989,11 +2994,11 @@ def clean_db_loop(args):
                 if args.db_cleanup_forts > 0:
                     db_clean_forts(args.db_cleanup_forts)
 
-                #clean weather... only changes at full hours anyway...
+                #C lean weather... only changes at full hours anyway...
                 query = (Weather
-                    .delete()
-                    .where((Weather.last_updated <
-                    (datetime.utcnow() - timedelta(minutes=15)))))
+                         .delete()
+                         .where((Weather.last_updated <
+                                 (datetime.utcnow() - timedelta(minutes=15)))))
                 query.execute()
 
                 log.info('Full database cleanup completed.')
@@ -3002,6 +3007,7 @@ def clean_db_loop(args):
             time.sleep(regular_cleanup_secs)
         except Exception as e:
             log.exception('Database cleanup failed: %s.', e)
+
 
 def db_cleanup_regular():
     log.debug('Regular database cleanup started.')
@@ -3047,19 +3053,19 @@ def db_cleanup_worker_status(age_minutes):
                  .delete()
                  .where(MainWorker.last_modified < worker_status_timeout))
         query.execute()
-        #OPTIMIZE TABLE locks the table...
-        #queryOptimize = MainWorker.raw('OPTIMIZE TABLE mainworker')
-        #queryOptimize.execute()
-        #log.debug('Finished %s.', queryOptimize)
+        # OPTIMIZE TABLE locks the table...
+        # queryOptimize = MainWorker.raw('OPTIMIZE TABLE mainworker')
+        # queryOptimize.execute()
+        # log.debug('Finished %s.', queryOptimize)
 
         # Remove worker status information that are inactive.
         query = (WorkerStatus
                  .delete()
                  .where(MainWorker.last_modified < worker_status_timeout))
         query.execute()
-        #queryOptimize = WorkerStatus.raw('OPTIMIZE TABLE workerstatus')
-        #queryOptimize.execute()
-        #log.debug('Finished %s.', queryOptimize)
+        # queryOptimize = WorkerStatus.raw('OPTIMIZE TABLE workerstatus')
+        # queryOptimize.execute()
+        # log.debug('Finished %s.', queryOptimize)
 
     time_diff = default_timer() - start_timer
     log.debug('Completed cleanup of old worker status in %.6f seconds.',
@@ -3249,6 +3255,7 @@ def db_clean_forts(age_hours):
     time_diff = default_timer() - start_timer
     log.debug('Completed cleanup of old forts in %.6f seconds.',
               time_diff)
+
 
 def bulk_upsert(cls, data, db):
     rows = data.values()
@@ -3790,7 +3797,8 @@ def database_migrate(db, old_ver):
             'pokemon_id, latitude, longitude, disappear_time, ' +
             'individual_attack, individual_defense, individual_stamina, ' +
             'move_1, move_2, cp, cp_multiplier, weight, height, gender, ' +
-            'form, costume, catch_prob_1, catch_prob_2, catch_prob_3, rating_attack, '
+            'form, costume, catch_prob_1, catch_prob_2, ' +
+            'catch_prob_3, rating_attack, ' +
             'rating_defense, weather_boosted_condition ,last_modified ' +
             'FROM `pokemon_old`;')
         db.execute_sql(
@@ -3822,7 +3830,7 @@ def database_migrate(db, old_ver):
             'INSERT INTO `gymmember` ' +
             'SELECT * FROM `gymmember_old`;')
         db.execute_sql(
-            'INSERT INTO `gympokemon` ' + 
+            'INSERT INTO `gympokemon` ' +
             'SELECT pokemon_uid, pokemon_id, cp,trainer_name, ' +
             'num_upgrades ,move_1, move_2, height, weight, stamina,'
             'stamina_max, cp_multiplier, additional_cp_multiplier,' +

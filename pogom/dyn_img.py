@@ -8,7 +8,7 @@ from pgoapi.protos.pogoprotos.enums.form_pb2 import Form
 from pgoapi.protos.pogoprotos.enums.gender_pb2 import (
     MALE, FEMALE, Gender, GENDERLESS, GENDER_UNSET)
 from pgoapi.protos.pogoprotos.enums.weather_condition_pb2 import (
-    WeatherCondition, NONE, CLEAR, RAINY,
+    WeatherCondition, CLEAR, RAINY,
     PARTLY_CLOUDY, OVERCAST, WINDY, SNOW, FOG)
 
 log = logging.getLogger(__name__)
@@ -224,7 +224,7 @@ def draw_battle_indicator():
 
 def battle_indicator_boom():
     # BOOM! Sticker
-    return [('-gravity center ( "{}" -resize 84x84 ) ' + 
+    return [('-gravity center ( "{}" -resize 84x84 ) ' +
              '-geometry +0+0 -composite').format(
         os.path.join(path_gym, 'boom.png'))]
 
@@ -236,7 +236,7 @@ def battle_indicator_fist():
     return [
         '-fill white -stroke black -draw "circle {},{} {},{}"'.format(
             x, y, x - gym_badge_radius, y),
-        '-gravity east ( "{}" -resize 24x24 ) -geometry ' + 
+        '-gravity east ( "{}" -resize 24x24 ) -geometry ' +
         '+4+0 -composite'.format(os.path.join(path_gym, 'fist.png'))
     ]
 
@@ -287,8 +287,9 @@ def pokemon_asset_path(pkm, classifier=None, gender=GENDER_UNSET,
         costume_assets_suffix = '_{:02d}'.format(costume)
         costume_suffix = '_{}'.format(Costume.Name(costume))
 
-    if (not gender_assets_suffix and not form_assets_suffix
-        and not costume_assets_suffix):
+    if (not gender_assets_suffix and
+        not form_assets_suffix and
+        not costume_assets_suffix):
         gender_assets_suffix = ('_16' if pkm == 201
                                 else '_00' if pkm > 0
                                 else '')

@@ -1,4 +1,5 @@
-/*global alertTexts showAllZoomLevel cssPercentageCircle getS2CellBounds processWeather processS2Cell processWeatherAlerts updateMainCellWeather getPokemonRawIconUrl*/
+/*global showAllZoomLevel cssPercentageCircle getS2CellBounds processWeather processS2Cell processWeatherAlerts updateMainCellWeather getPokemonRawIconUrl*/
+/* eslint no-unused-vars: "off" */
 //
 // Global map.js variables
 //
@@ -1651,7 +1652,7 @@ function showInBoundsMarkers(markers, type) {
                 if (map.getBounds().contains(marker.getPosition())) {
                     show = true
                 }
-            } else if (type == 's2cell') {
+            } else if (type === 's2cell') {
                 if (map.getBounds().intersects(getS2CellBounds(item))) {
                     show = true
                 }

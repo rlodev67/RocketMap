@@ -8,11 +8,12 @@ import gc
 from datetime import datetime
 from s2sphere import LatLng
 from bisect import bisect_left
-from flask import Flask, abort, jsonify, render_template, request, \
-    make_response, send_from_directory, send_file
+from flask import (Flask, abort, jsonify, render_template,
+                   request, make_response,
+                   send_from_directory, send_file)
 from flask.json import JSONEncoder
 from flask_compress import Compress
-from pogom.dyn_img (import get_gym_icon, get_pokemon_map_icon,
+from pogom.dyn_img import (get_gym_icon, get_pokemon_map_icon,
                     get_pokemon_raw_icon)
 from pogom.pgscout import scout_error, pgscout_encounter, perform_lure
 
@@ -132,7 +133,8 @@ class Pogom(Flask):
                 costume=costume, weather=weather, shiny=shiny)
         else:
             filename = get_pokemon_map_icon(
-                pkm, weather=weather, gender=gender, form=form, costume=costume)
+                pkm, weather=weather, 
+                gender=gender, form=form, costume=costume)
         return send_file(filename, mimetype='image/png')
 
     def scout_pokemon(self):
@@ -170,7 +172,7 @@ class Pogom(Flask):
             lng = request.args.get('longitude')
             log.info(
                 u"On demand luring a stop at lat = {}, long = {}.".format(lat,
-                                              lng))
+                                                                          lng))
             stops = Pokestop.get_stop_by_cord(lat, lng)
             if len(stops) > 1:
                 log.info("Error, more than one stop returned")

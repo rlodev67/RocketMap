@@ -34,17 +34,7 @@
     "MarkerClusterer": true,
     "isNotifyPoke": true,
     "isTouchDevice": true,
-    "isMobileDevice": true,
-    "showAllZoomLevel": true,
-    "getS2CellBounds": true,
-    "processWeather": true,
-    "processS2Cell": true,
-    "processWeatherAlerts": true,
-    "updateMainCellWeather": true,
-    "weatherImages": true,
-    "weatherNames": true,
-    "cssPercentageCircle": true,
-    
+    "isMobileDevice": true,    
 
     "noLabelsStyle": true,
     "darkStyle": true,

@@ -6,15 +6,17 @@ import random
 import time
 
 from pgoapi.protos.pogoprotos.inventory.item.item_id_pb2 import (
-    ITEM_POKE_BALL, ITEM_GREAT_BALL, ITEM_ULTRA_BALL, 
+    ITEM_POKE_BALL, ITEM_GREAT_BALL, ITEM_ULTRA_BALL,
     ITEM_MASTER_BALL, ITEM_POTION, ITEM_SUPER_POTION,
     ITEM_HYPER_POTION, ITEM_MAX_POTION, ITEM_REVIVE,
     ITEM_MAX_REVIVE, ITEM_BLUK_BERRY, ITEM_NANAB_BERRY,
     ITEM_WEPAR_BERRY, ITEM_PINAP_BERRY, ITEM_RAZZ_BERRY)
 
-from pogom.account import log, spin_pokestop_request, \
-    encounter_pokemon_request, pokestop_spinnable, incubate_eggs,
-    clear_inventory_request, request_release_pokemon
+from pogom.account import (log, spin_pokestop_request,
+                           encounter_pokemon_request,
+                           pokestop_spinnable,
+                           incubate_eggs, clear_inventory_request,
+                           request_release_pokemon)
 from pogom.utils import get_pokemon_name, in_radius
 
 log = logging.getLogger(__name__)
@@ -73,7 +75,7 @@ def gxp_spin_stops(forts, pgacc, step_location):
                 log.debug('GXP: Failed to spin Pokestop. ' +
                           'Has recently been spun.')
             elif spin_result is 4:
-                log.debug('GXP: Failed to spin Pokestop. ' + 
+                log.debug('GXP: Failed to spin Pokestop. ' +
                           'Inventory is full.')
                 cleanup_inventory(pgacc)
             elif spin_result is 5:
@@ -102,11 +104,13 @@ def is_ditto(args, pgacc, p):
     catch_result = catch(pgacc, p.encounter_id, p.spawn_point_id)
     if catch_result['catch_status'] == 'success':
         if int(catch_result['pid']) == DITTO_POKEDEX_ID:
-            logmsg = u'GXP: Successfully caught a Ditto disguised as {}! Needed {} attempts.'
+            logmsg = u'GXP: Successfully caught a Ditto disguised ' +
+            'as {}! Needed {} attempts.'
             captured_pokemon_name = get_pokemon_name(DITTO_POKEDEX_ID)
             got_ditto = True
         else:
-            logmsg = u'GXP: Successfully caught a regular {} after {} attempts.'
+            logmsg = u'GXP: Successfully caught a ' +
+            'regular {} after {} attempts.'
         log.info(logmsg.format(pokemon_name, catch_result['attempts']))
     else:
         log.info("GXP: Failed catching {}: {} Attempts: {}".format(
@@ -133,9 +137,9 @@ def catch(pgacc, encounter_id, spawn_point_id):
             # Determine best ball - we know for sure that we have at least one
             inventory = pgacc.inventory
             ball = (ITEM_ULTRA_BALL
-                    if inventory.get(ITEM_ULTRA_BALL, 0) > 0 
-                    else (ITEM_GREAT_BALL 
-                          if inventory.get(ITEM_GREAT_BALL, 0) > 0 
+                    if inventory.get(ITEM_ULTRA_BALL, 0) > 0
+                    else (ITEM_GREAT_BALL
+                          if inventory.get(ITEM_GREAT_BALL, 0) > 0
                           else ITEM_POKE_BALL))
 
             catch_result = pgacc.req_catch_pokemon(
@@ -158,7 +162,8 @@ def catch(pgacc, encounter_id, spawn_point_id):
 
                 # Broke free!
                 if catch_status == 2:
-                    log.debug('GXP: Catch attempt %s failed. It broke free!', rv['attempts'])
+                    log.debug('GXP: Catch attempt %s failed. ' +
+                              'It broke free!', rv['attempts'])
 
                 # Ran away!
                 if catch_status == 3:
@@ -167,13 +172,16 @@ def catch(pgacc, encounter_id, spawn_point_id):
 
                 # Dodged!
                 if catch_status == 4:
-                    log.debug('GXP: Catch attempt %s failed. It dodged the ball!', rv['attempts'])
+                    log.debug('GXP: Catch attempt %s failed. ' +
+                              'It dodged the ball!', rv['attempts'])
 
             else:
-                log.error('GXP: Catch attempt %s failed. The api response was empty!', rv['attempts'])
+                log.error('GXP: Catch attempt %s failed. ' +
+                          'The api response was empty!', rv['attempts'])
 
         except Exception as e:
-            log.error('GXP: Catch attempt %s failed. API exception: %s', rv['attempts'], repr(e))
+            log.error('GXP: Catch attempt %s failed. ' +
+                      'API exception: %s', rv['attempts'], repr(e))
 
         rv['attempts'] += 1
 
@@ -242,8 +250,8 @@ def cleanup_inventory(pgacc):
 
 def drop_items(pgacc, item_id, drop_stats, drop_count=-1):
     item_count = pgacc.inventory.get(item_id, 0)
-    drop_count = (item_count 
-                  if drop_count == -1 
+    drop_count = (item_count
+                  if drop_count == -1
                   else min(item_count, drop_count))
     if drop_count > 0:
         time.sleep(random.uniform(2, 4))

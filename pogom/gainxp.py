@@ -12,7 +12,7 @@ from pgoapi.protos.pogoprotos.inventory.item.item_id_pb2 import (
     ITEM_MAX_REVIVE, ITEM_BLUK_BERRY, ITEM_NANAB_BERRY,
     ITEM_WEPAR_BERRY, ITEM_PINAP_BERRY, ITEM_RAZZ_BERRY)
 
-from pogom.account import (log, spin_pokestop_request,
+from pogom.account import (spin_pokestop_request,
                            encounter_pokemon_request,
                            pokestop_spinnable, clear_inventory_request)
 from pogom.utils import get_pokemon_name

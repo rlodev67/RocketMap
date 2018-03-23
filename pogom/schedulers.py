@@ -426,7 +426,7 @@ class SpawnScan(BaseScheduler):
         for step, sp in enumerate(self.locations, 1):
             altitude = get_altitude(self.args, [sp['lat'], sp['lng']])
             retset.append((step, (sp['lat'], sp['lng'], altitude),
-                            sp['appears'], sp['leaves']))
+                           sp['appears'], sp['leaves']))
 
         return retset
 

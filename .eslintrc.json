@@ -79,7 +79,8 @@
     "updatePokemonLabels": true,
     "getPokemonRarity": true,
     "updatePokemonRarities": true,
-    "generateImages": true
+    "generateImages": true,
+    "getPokemonRawIconUrl": true
 
   }
 }

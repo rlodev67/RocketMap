@@ -1314,7 +1314,7 @@ function cssPercentageCircle(text, value, perfectVal, goodVal, okVal, mehVal) {
             </div>`
 }
 
-function get_pokemon_raw_icon_url(p) {
+function getPokemonRawIconUrl(p) {
     if (!generateImages) {
         return `static/icons/${p.pokemon_id}.png`
     }

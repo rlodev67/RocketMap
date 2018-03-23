@@ -1,3 +1,4 @@
+/*global i8ln*/
 /* eslint no-unused-vars: "off" */
 
 var noLabelsStyle = [{

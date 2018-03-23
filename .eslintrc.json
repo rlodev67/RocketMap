@@ -35,6 +35,14 @@
     "isNotifyPoke": true,
     "isTouchDevice": true,
     "isMobileDevice": true,
+    "showAllZoomLevel": true,
+    "getS2CellBounds": true,
+    "processWeather": true,
+    "processS2Cell": true,
+    "processWeatherAlerts": true,
+    "updateMainCellWeather": true,
+    "weatherImages": true,
+    
 
     "noLabelsStyle": true,
     "darkStyle": true,

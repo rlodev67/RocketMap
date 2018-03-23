@@ -464,11 +464,11 @@ def get_args():
                               'data on failure.'),
                         type=int, default=3)
     parser.add_argument('-whct', '--wh-connect-timeout',
-                         help=('Connect timeout (in seconds) for webhook' +
-                               ' requests.'),
+                         help=('Connect timeout (in seconds) for webhook ' +
+                               'requests.'),
                         type=float, default=1.0)
     parser.add_argument('-whrt', '--wh-read-timeout',
-                        help=('Read timeout (in seconds) for webhook' +
+                        help=('Read timeout (in seconds) for webhook ' +
                               'requests.'),
                         type=float, default=1.0)
     parser.add_argument('-whbf', '--wh-backoff-factor',
@@ -951,7 +951,7 @@ def is_imagemagick_binary(binary):
                                    stdout=subprocess.PIPE)
         out, err = process.communicate()
         return "ImageMagick" in out
-    except:
+    except Exception:
         return False
 
 

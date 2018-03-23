@@ -42,6 +42,11 @@
     "processWeatherAlerts": true,
     "updateMainCellWeather": true,
     "weatherImages": true,
+    "weatherNames": true,
+    "cssPercentageCircle": true,
+    "i8ln": true,
+    "map": true,
+    "jsts": true,
     
 
     "noLabelsStyle": true,

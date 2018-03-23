@@ -102,7 +102,7 @@ def get_args():
     parser.add_argument('-hw', '--highlvl-workers', type=int,
                         default=0,
                         help=('Load this many high level' +
-                              'workers from PGPool. This requires '+
+                              'workers from PGPool. This requires ' +
                               '--pgpool-url to be set.'))
     parser.add_argument('-asi', '--account-search-interval', type=int,
                         default=0,
@@ -429,7 +429,8 @@ def get_args():
                              'Default: 720, 0 to disable.'),
                        type=int, default=720)
     group.add_argument('-DCf', '--db-cleanup-forts',
-                       help=('Clear gyms and pokestops from database X hours ' +
+                       help=('Clear gyms and pokestops from ' +
+                             'database X hours ' +
                              'after last valid scan. ' +
                              'Default: 0, 0 to disable.'),
                        type=int, default=0)
@@ -471,7 +472,7 @@ def get_args():
                         type=float, default=1.0)
     parser.add_argument('-whrt', '--wh-read-timeout',
                         help=('Read timeout (in seconds) for webhook' +
-						'requests.'),
+                              'requests.'),
                         type=float, default=1.0)
     parser.add_argument('-whbf', '--wh-backoff-factor',
                         help=('Factor (in seconds) by which the delay ' +
@@ -585,12 +586,14 @@ def get_args():
                         help='Client Secret for user external authentication.')
     parser.add_argument('-uasho', '--uas-host-override', default=None,
                         help='Host override for user external authentication.')
-    parser.add_argument('-uasdrg', '--uas-discord-required-guilds', default=None,
+    parser.add_argument('-uasdrg', '--uas-discord-required-guilds', 
+                        default=None,
                         help=('Required Discord Guild(s) for user ' +
                               'external authentication.'))
     parser.add_argument('-uasdgi', '--uas-discord-guild-invite', default=None,
                         help='Link for users not in required guild.')
-    parser.add_argument('-uasdrr', '--uas-discord-required-roles', default=None,
+    parser.add_argument('-uasdrr', '--uas-discord-required-roles',
+                        default=None,
                         help=('Required Discord Guild Role(s) ' +
                               'for user external authentication.'))
     parser.add_argument('-uasdbt', '--uas-discord-bot-token', default=None,
@@ -608,8 +611,8 @@ def get_args():
                               ' Default: 0. 0 to disable.'),
                         type=float, default=0)
     parser.add_argument('-Rfn', '--rarity-filename', type=str,
-                        help=('Filename of rarity json for different databases (without .json)' +
-                              'Default: rarity'),
+                        help=('Filename of rarity json for different ' +
+                              'databases (without .json) Default: rarity'),
                         default='rarity')
     statusp = parser.add_argument_group('Status Page')
     statusp.add_argument('-SPp', '--status-page-password', default=None,
@@ -776,7 +779,7 @@ def get_args():
                 if num_auths > 1 and num_usernames != num_auths:
                     errors.append((
                         'The number of provided auth ({}) must match the ' +
-                        'username count ({}).').format(num_auths, 
+                        'username count ({}).').format(num_auths,
                                                        num_usernames))
         elif args.workers is None:
             errors.append(
@@ -872,11 +875,11 @@ def get_args():
         if args.pgpool_url is None:
             if len(args.accounts) == 0:
                 print(sys.argv[0] +
-                      ": Error: no accounts specified. Use -a, ' + 
-                      '-u, and -p or " +
-                      "--accountcsv to add accounts. Or use ' +
-                      '-pgpu/--pgpool-url to " +
-                      "specify the URL of PGPool.")
+                      ': Error: no accounts specified. Use -a, ' + 
+                      '-u, and -p or ' +
+                      '--accountcsv to add accounts. Or use ' +
+                      '-pgpu/--pgpool-url to ' +
+                      'specify the URL of PGPool.')
                 sys.exit(1)
 
         # create an empty set
@@ -933,9 +936,9 @@ def init_dynamic_images(args):
                         args.pogo_assets))
                     dyn_img.pogo_assets = args.pogo_assets
                 else:
-                    log.error(("Could not find PogoAssets repository at '{}'."
-                              " Clone via 'git clone -depth 1 "
-                              "https://github.com/ZeChrales/PogoAssets.git'")
+                    log.error(("Could not find PogoAssets repository at '{}'. "
+                               "Clone via 'git clone -depth 1 "
+                               "https://github.com/ZeChrales/PogoAssets.git'")
                               .format(args.pogo_assets))
         else:
             log.error("Could not find ImageMagick executable. Make sure "
@@ -968,9 +971,8 @@ def determine_imagemagick_binary():
 
 def init_args(args):
     """
-    Initialize commandline arguments after parsing. 
+    Initialize commandline arguments after parsing.
     Some things need to happen after parsing.
-
     :param args: The parsed commandline arguments
     """
 
@@ -1505,8 +1507,8 @@ def dynamic_rarity_refresher():
     hours = args.rarity_hours
     root_path = args.root_path
 
- 
-    rarities_path = os.path.join(root_path, 'static/dist/data/' + args.rarity_filename + '.json')
+    rarities_path = os.path.join(
+        root_path, 'static/dist/data/' + args.rarity_filename + '.json')
 
     update_frequency_mins = args.rarity_update_frequency
     refresh_time_sec = update_frequency_mins * 60

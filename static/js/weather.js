@@ -1,3 +1,4 @@
+/* eslint no-unused-vars: "off" */
 // Globales variables
 const alertTexts = {
     1: 'Moderate',

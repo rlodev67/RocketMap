@@ -287,9 +287,11 @@ def pokemon_asset_path(pkm, classifier=None, gender=GENDER_UNSET,
         costume_assets_suffix = '_{:02d}'.format(costume)
         costume_suffix = '_{}'.format(Costume.Name(costume))
 
-    if (not gender_assets_suffix and
+    if (
+        not gender_assets_suffix and
         not form_assets_suffix and
-        not costume_assets_suffix):
+        not costume_assets_suffix
+       ):
         gender_assets_suffix = ('_16' if pkm == 201
                                 else '_00' if pkm > 0
                                 else '')

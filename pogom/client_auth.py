@@ -126,7 +126,7 @@ def exchange_code(code, host, args):
         r.raise_for_status()
     except HTTPError:
         log.debug('' + str(r.status_code) + 
-                  ' returned from OAuth attempt: ' + 
+                  ' returned from OAuth attempt: ' +
                   r.text)
         return False
     return r.json()
@@ -140,7 +140,7 @@ def get_user_guilds(auth_token):
                      headers=headers)
     try:
         r.raise_for_status()
-    except:
+    except Exception:
         log.debug('' + str(r.status_code) +
                   ' returned from guild list attempt: ' +
                   r.text)
@@ -156,7 +156,7 @@ def get_user_guild_roles(auth_token, args):
                      headers=headers)
     try:
         r.raise_for_status()
-    except:
+    except Exception:
         log.debug('' + str(r.status_code) +
                   ' returned from Discord @me attempt: ' +
                   r.text)
@@ -171,7 +171,7 @@ def get_user_guild_roles(auth_token, args):
         '/members/' + user_id, headers=headers)
     try:
         r.raise_for_status()
-    except:
+    except Exception:
         log.debug('' + str(r.status_code) +
                   ' returned from Discord guild member attempt: ' +
                   r.text)

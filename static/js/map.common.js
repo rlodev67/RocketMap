@@ -1295,19 +1295,19 @@ function cssPercentageCircle(text, value, perfectVal, goodVal, okVal, mehVal) {
     // CSS styles
     var percentage = value * 100 / perfectVal
     var deg = 360 * percentage / 100
-    var circle_styles
+    var circleStyles
     if (deg <= 180) {
-        circle_styles = `background-color: ${ringColor};
+        circleStyles = `background-color: ${ringColor};
             background-image: linear-gradient(${90 + deg}deg, transparent 50%, Gainsboro 50%),
                               linear-gradient(90deg, Gainsboro 50%, transparent 50%)');`
     } else {
-        circle_styles = `background-color: ${ringColor};
+        circleStyles = `background-color: ${ringColor};
             background-image: linear-gradient(${deg-90}deg, transparent 50%, ${ringColor} 50%),
                               linear-gradient(90deg, Gainsboro 50%, transparent 50%)');`
     }
 
     // HTML output
-    return `<div class="active-border" style='${circle_styles}'>
+    return `<div class="active-border" style='${circleStyles}'>
                 <div class="circle">
                     <span class="prec" id="prec">${text}</span>
                 </div>

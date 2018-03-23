@@ -1,3 +1,4 @@
+/*global getPokemonRawIconUrl*/
 function countMarkers(map) { // eslint-disable-line no-unused-vars
     document.getElementById('stats-ldg-label').innerHTML = ''
     document.getElementById('stats-pkmn-label').innerHTML = 'Pokémon'

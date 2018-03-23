@@ -8,8 +8,8 @@ from pgoapi.protos.pogoprotos.enums.form_pb2 import Form
 from pgoapi.protos.pogoprotos.enums.gender_pb2 import (
     MALE, FEMALE, Gender, GENDERLESS, GENDER_UNSET)
 from pgoapi.protos.pogoprotos.enums.weather_condition_pb2 import (
-    WeatherCondition,NONE,CLEAR,RAINY,
-    PARTLY_CLOUDY,OVERCAST,WINDY,SNOW,FOG)
+    WeatherCondition, NONE, CLEAR, RAINY,
+    PARTLY_CLOUDY, OVERCAST, WINDY, SNOW, FOG)
 
 log = logging.getLogger(__name__)
 
@@ -64,13 +64,13 @@ gym_badge_radius = 15
 gym_badge_padding = 1
 
 badge_upper_left = (
-    gym_badge_padding + gym_badge_radius, 
+    gym_badge_padding + gym_badge_radius,
     gym_badge_padding + gym_badge_radius)
 badge_upper_right = (
     gym_icon_size - (gym_badge_padding + gym_badge_radius),
     gym_badge_padding + gym_badge_radius)
 badge_lower_left = (
-    gym_badge_padding + gym_badge_radius, 
+    gym_badge_padding + gym_badge_radius,
     gym_icon_size - (gym_badge_padding + gym_badge_radius))
 badge_lower_right = (
     gym_icon_size - (gym_badge_padding + gym_badge_radius),
@@ -104,7 +104,7 @@ def get_pokemon_map_icon(pkm, weather=None, gender=None,
     if pogo_assets:
         source, target = pokemon_asset_path(
             pkm, classifier='marker', gender=gender,
-            form=form, costume=costume,weather=weather)
+            form=form, costume=costume, weather=weather)
         target_size = 96
         im_lines.append(
             '-fuzz 0.5% -trim +repage'
@@ -224,7 +224,8 @@ def draw_battle_indicator():
 
 def battle_indicator_boom():
     # BOOM! Sticker
-    return [('-gravity center ( "{}" -resize 84x84 )' -geometry +0+0 -composite').format(
+    return [('-gravity center ( "{}" -resize 84x84 ) ' + 
+             '-geometry +0+0 -composite').format(
         os.path.join(path_gym, 'boom.png'))]
 
 
@@ -235,14 +236,16 @@ def battle_indicator_fist():
     return [
         '-fill white -stroke black -draw "circle {},{} {},{}"'.format(
             x, y, x - gym_badge_radius, y),
-        '-gravity east ( "{}" -resize 24x24 ) -geometry +4+0 -composite'.format(os.path.join(path_gym, 'fist.png'))
+        '-gravity east ( "{}" -resize 24x24 ) -geometry ' + 
+        '+4+0 -composite'.format(os.path.join(path_gym, 'fist.png'))
     ]
 
 
 def battle_indicator_flame():
     # Flame Badge
     return [
-        '-gravity east ( "{}" -resize 32x32 ) -geometry +0+0 -composite'.format(os.path.join(path_gym, 'flame.png'))
+        '-gravity east ( "{}" -resize 32x32 ) -geometry ' +
+        '+0+0 -composite'.format(os.path.join(path_gym, 'flame.png'))
     ]
 
 
@@ -253,7 +256,8 @@ def battle_indicator_swords():
     return [
         '-fill white -stroke black -draw "circle {},{} {},{}"'.format(
             x, y, x - gym_badge_radius, y),
-        '-gravity east ( "{}" -resize 24x24 ) -geometry +4+0 -composite'.format(os.path.join(path_gym, 'swords.png'))
+        '-gravity east ( "{}" -resize 24x24 ) -geometry +4+0 ' +
+        '-composite'.format(os.path.join(path_gym, 'swords.png'))
     ]
 
 
@@ -285,8 +289,8 @@ def pokemon_asset_path(pkm, classifier=None, gender=GENDER_UNSET,
 
     if (not gender_assets_suffix and not form_assets_suffix
         and not costume_assets_suffix):
-        gender_assets_suffix = ('_16' if pkm == 201 
-                                else '_00' if pkm > 0 
+        gender_assets_suffix = ('_16' if pkm == 201
+                                else '_00' if pkm > 0
                                 else '')
 
     # Castform
@@ -316,7 +320,8 @@ def pokemon_asset_path(pkm, classifier=None, gender=GENDER_UNSET,
         return assets_fullname, target_name
     else:
         if gender == MALE:
-            log.warning("Cannot find PogoAssets file {}".format(assets_fullname))
+            log.warning("Cannot find PogoAssets file {}".format(
+                assets_fullname))
             # Dummy Pokemon icon
             return os.path.join(
                 assets_basedir, 'pokemon_icon_000.png'),
@@ -330,7 +335,9 @@ def pokemon_asset_path(pkm, classifier=None, gender=GENDER_UNSET,
 def draw_gym_subject(image, size, gravity='north', trim=False):
     trim_cmd = ' -fuzz 0.5% -trim +repage' if trim else ''
     lines = [
-        '-gravity {} ( "{}"{} -scale {}x{} -unsharp 0x1 ( +clone -background black -shadow 80x3+5+5 ) +swap -background none -layers merge +repage ) -geometry +0+0 -composite'.format(
+        '-gravity {} ( "{}"{} -scale {}x{} -unsharp 0x1 ( +clone ' +
+        '-background black -shadow 80x3+5+5 ) +swap -background ' +
+        'none -layers merge +repage ) -geometry +0+0 -composite'.format(
             gravity, image, trim_cmd, size, size)
     ]
     return lines
@@ -341,7 +348,8 @@ def draw_badge(pos, fill_col, text_col, text):
     lines = [
         '-fill {} -stroke black -draw "circle {},{} {},{}"'.format(
             fill_col, x, y, x + gym_badge_radius, y),
-        '-gravity center -fill {} -stroke none -draw "text {},{} \'{}\'"'.format(
+        '-gravity center -fill {} -stroke none ' +
+        '-draw "text {},{} \'{}\'"'.format(
             text_col, x - 48, y - 49, text)
     ]
     return lines

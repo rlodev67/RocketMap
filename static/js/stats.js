@@ -44,7 +44,7 @@ function countMarkers(map) { // eslint-disable-line no-unused-vars
 
         for (i = 0; i < pkmnCount.length; i++) {
             if (pkmnCount[i] && pkmnCount[i].Count > 0) {
-                var pokemonIcon = get_pokemon_raw_icon_url({'pokemon_id': pkmnCount[i].ID})
+                var pokemonIcon = getPokemonRawIconUrl({'pokemon_id': pkmnCount[i].ID})
                 pokeCounts.push(
                     [
                         '<img class="pokemonListString pokemon-icon" src=\'' + pokemonIcon + '\' />',

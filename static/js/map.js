@@ -103,10 +103,10 @@ const weatherNames = {
     7: 'Fog'
 }
 
-const alertTexts = {
+/*const alertTexts = {
     1: 'Moderate',
     2: 'Extreme'
-}
+}*/
 
 const excludedRaritiesList = [
   [],

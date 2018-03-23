@@ -1,11 +1,6 @@
- /*global map jsts weatherImages*/
+ /*global alertTexts map jsts weatherImages*/
 /* eslint no-unused-vars: "off" */
 // Globales variables
-const alertTexts = {
-    1: 'Moderate',
-    2: 'Extreme'
-}
-
 
 /**
  * Parses info about weather cell and draws icon

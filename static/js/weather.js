@@ -1,4 +1,4 @@
- /*global alertTexts map jsts weatherImages*/
+ /*global alertTexts map jsts weatherImages weatherNames*/
 /* eslint no-unused-vars: "off" */
 // Globales variables
 

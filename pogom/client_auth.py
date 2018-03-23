@@ -125,7 +125,7 @@ def exchange_code(code, host, args):
     try:
         r.raise_for_status()
     except HTTPError:
-        log.debug('' + str(r.status_code) + 
+        log.debug('' + str(r.status_code) +
                   ' returned from OAuth attempt: ' +
                   r.text)
         return False
@@ -136,7 +136,7 @@ def get_user_guilds(auth_token):
     headers = {
       'Authorization': 'Bearer ' + auth_token
     }
-    r = requests.get('https://discordapp.com/api/v6/users/@me/guilds', 
+    r = requests.get('https://discordapp.com/api/v6/users/@me/guilds',
                      headers=headers)
     try:
         r.raise_for_status()

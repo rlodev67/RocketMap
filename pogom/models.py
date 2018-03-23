@@ -33,8 +33,9 @@ from .utils import (get_pokemon_name, get_pokemon_types,
 from .transform import transform_from_wgs_to_gcj, get_new_coords
 from .customLog import printPokemon
 
-from .account import pokestop_spinnable, spin_pokestop, incubate_eggs, setup_mrmime_account, \
-    encounter_pokemon_request, clear_pokemon
+from .account import (pokestop_spinnable, spin_pokestop,
+                      incubate_eggs, setup_mrmime_account,
+                      encounter_pokemon_request, clear_pokemon)
 from .proxy import get_new_proxy
 from pgoapi.protos.pogoprotos.map.weather.gameplay_weather_pb2 import *
 from pgoapi.protos.pogoprotos.map.weather.weather_alert_pb2 import *
@@ -48,10 +49,9 @@ cache = TTLCache(maxsize=100, ttl=60 * 5)
 
 db_schema_version = 29
 
-
-
 class MyRetryDB(RetryOperationalError, PooledMySQLDatabase):
     pass
+
 
 # Reduction of CharField to fit max length inside 767 bytes for utf8mb4 charset
 class Utf8mb4CharField(CharField):
@@ -59,8 +59,10 @@ class Utf8mb4CharField(CharField):
         self.max_length = max_length
         super(CharField, self).__init__(*args, **kwargs)
 
+
 class UBigIntegerField(BigIntegerField):
     db_field = 'bigint unsigned'
+
 
 def init_database(app):
     log.info('Connecting to MySQL database on %s:%i...',
@@ -355,9 +357,11 @@ class Pokestop(LatLongModel):
 
     @staticmethod
     def get_stop_by_cord(lat, long):
-        query = Pokestop.select(Pokestop.pokestop_id, Pokestop.latitude, Pokestop.longitude)
-        query = (query
-                     .where(((Pokestop.latitude == lat) & (Pokestop.longitude == long))).dicts())
+        query = Pokestop.select(Pokestop.pokestop_id, 
+                                Pokestop.latitude, Pokestop.longitude)
+        query = (query.where(
+            ((Pokestop.latitude == lat) & 
+             (Pokestop.longitude == long))).dicts())
         pokestops = []
         for p in query:
             if args.china:
@@ -920,6 +924,7 @@ class ScannedLocation(LatLongModel):
                         'scannedlocation': cell}
                     index += 1
         return scan_spawn_point
+
     # Return list of dicts for upcoming valid band times.
     @staticmethod
     def linked_spawn_points(cell):
@@ -1226,7 +1231,8 @@ class WorkerStatus(LatLongModel):
             else:
                 log.error("Area {} not found.".format(worker_name))
         except Exception as e:
-            log.error("Could not determine center of area {}: {}".format(worker_name, repr(e)))
+            log.error("Could not determine center of area {}: {}".format(
+                worker_name, repr(e)))
 
         return None
 
@@ -1351,7 +1357,6 @@ class SpawnPoint(LatLongModel):
             del sp['earliest_unseen']
 
         return list(spawnpoints.values())
-
 
     # Confirm if tth has been found.
     @staticmethod
@@ -1860,8 +1865,8 @@ class Weather(BaseModel):
     severity = SmallIntegerField(null=True, index=True)
     warn_weather = SmallIntegerField(null=True, index=True)
     world_time = SmallIntegerField(null=True, index=True)
-    last_updated = DateTimeField(default=datetime.utcnow, null=True, index=True)
-
+    last_updated = DateTimeField(default=datetime.utcnow, 
+                                 null=True, index=True)
 
     @staticmethod
     def get_weathers():
@@ -1875,22 +1880,27 @@ class Weather(BaseModel):
 
     @staticmethod
     def get_weather_by_location(swLat, swLng, neLat, neLng, alert):
-        # We can filter by the center of a cell, this deltas can expand the viewport bounds
-        # So cells with center outside the viewport, but close to it can be rendered
-        # otherwise edges of cells that intersects with viewport won't be rendered
+        # We can filter by the center of a cell, 
+        # this deltas can expand the viewport bounds
+        # So cells with center outside the viewport, 
+        # but close to it can be rendered
+        # otherwise edges of cells that intersects 
+        # with viewport won't be rendered
         lat_delta = 0.15
         lng_delta = 0.4
         if not alert:
-            query = Weather.select().where((Weather.latitude >= float(swLat) - lat_delta) &
-                                           (Weather.longitude >= float(swLng) - lng_delta) &
-                                           (Weather.latitude <= float(neLat) + lat_delta) &
-                                           (Weather.longitude <= float(neLng) + lng_delta)).dicts()
+            query = Weather.select().where((
+                Weather.latitude >= float(swLat) - lat_delta) &
+                (Weather.longitude >= float(swLng) - lng_delta) &
+                (Weather.latitude <= float(neLat) + lat_delta) &
+                (Weather.longitude <= float(neLng) + lng_delta)).dicts()
         else:
-            query = Weather.select().where((Weather.latitude >= float(swLat) - lat_delta) &
-                                           (Weather.longitude >= float(swLng) - lng_delta) &
-                                           (Weather.latitude <= float(neLat) + lat_delta) &
-                                           (Weather.longitude <= float(neLng) + lng_delta) &
-                                           (Weather.severity.is_null(False))).dicts()
+            query = Weather.select().where((
+                Weather.latitude >= float(swLat) - lat_delta) &
+                (Weather.longitude >= float(swLng) - lng_delta) &
+                (Weather.latitude <= float(neLat) + lat_delta) &
+                (Weather.longitude <= float(neLng) + lng_delta) &
+                (Weather.severity.is_null(False))).dicts()
         weathers = []
         for w in query:
             weathers.append(w)
@@ -1958,7 +1968,8 @@ def perform_pgscout(p):
     pkm.spawnpoint_id = int(p.spawn_point_id, 16)
     pkm.latitude = p.latitude
     pkm.longitude = p.longitude
-    pkm.weather_boosted_condition = p.pokemon_data.pokemon_display.weather_boosted_condition
+    pokemon_display = p.pokemon_data.pokemon_display
+    pkm.weather_boosted_condition = pokemon_display.weather_boosted_condition
     scout_result = pgscout_encounter(pkm)
     if scout_result['success']:
         log.info(
@@ -2057,8 +2068,8 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
     if weather_alert:
         for w in weather_alert:
             log.info('Weather Alerts Active: %s, Severity Level: %s',
-                            w.warn_weather,
-                            WeatherAlert.Severity.Name(w.severity))
+                     w.warn_weather,
+                     WeatherAlert.Severity.Name(w.severity))
             severity = w.severity
             warn = w.warn_weather
 
@@ -2083,20 +2094,19 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
         }
         # Weather Information Log
         log.debug('Weather Info: Cloud Level: %s, Rain Level: %s, ' +
-            'Wind Level: %s, Snow Level: %s, Fog Level: %s, ' +
-            'Wind Direction: %s°.', display_weather.cloud_level,
-            display_weather.rain_level, display_weather.wind_level,
-            display_weather.snow_level, display_weather.fog_level,
-            display_weather.wind_direction)
+                  'Wind Level: %s, Snow Level: %s, Fog Level: %s, ' +
+                  'Wind Direction: %s°.', display_weather.cloud_level,
+                  display_weather.rain_level, display_weather.wind_level,
+                  display_weather.snow_level, display_weather.fog_level,
+                  display_weather.wind_direction)
 
         log.info('GamePlay Conditions: %s - %s Bonus.',
-                    GetMapObjectsResponse.TimeOfDay.Name(worldtime),
-                    GameplayWeather.WeatherCondition.Name(gameplayweather))
+                 GetMapObjectsResponse.TimeOfDay.Name(worldtime),
+                 GameplayWeather.WeatherCondition.Name(gameplayweather))
 
     log.debug(weather)
     log.info('Upserted %d weather details.',
              len(weather))
-
 
     # If there are no wild or nearby Pokemon...
     if not wild_pokemon and not nearby_pokemon:
@@ -2229,8 +2239,9 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
             # Catch pokemon to check for Ditto if --gain-xp enabled
             # Original code by voxx!
             have_balls = pgacc.inventory_balls > 0
-            if args.gain_xp and not pgacc.get_stats(
-                'level') >= 30 and pokemon_id in DITTO_CANDIDATES_IDS and have_balls:
+            if (args.gain_xp and not pgacc.get_stats('level') >= 30 
+                and pokemon_id in DITTO_CANDIDATES_IDS
+                and have_balls):
                 if is_ditto(args, pgacc, p):
                     pokemon_id = 132
 
@@ -2272,19 +2283,22 @@ def parse_map(args, map_dict, scan_coords, scan_location, db_update_queue,
                 'catch_prob_3': None,
                 'rating_attack': None,
                 'rating_defense': None,
-                'weather_boosted_condition' : None
+                'weather_boosted_condition': None
             }
 
             # Weather Pokemon Bonus
-            weather_boosted_condition = p.pokemon_data.pokemon_display.weather_boosted_condition
+            weather_boosted_condition = (p.pokemon_data
+                                         .pokemon_display
+                                         .weather_boosted_condition)
             if weather_boosted_condition:
-                pokemon[p.encounter_id]['weather_boosted_condition'] = weather_boosted_condition
+                boosted = weather_boosted_condition
+                pokemon[p.encounter_id]['weather_boosted_condition'] = boosted
 
             # Check for Unown's alphabetic character.
             if pokemon_id == 201:
                 pokemon[p.encounter_id]['form'] = (p.pokemon_data
                                                     .pokemon_display.form)
-            #Check for costform skin
+            # Check for castform skin
             if pokemon_id == 351:
                 pokemon[p.encounter_id]['form'] = (p.pokemon_data
                                                     .pokemon_display.form)
@@ -2847,7 +2861,8 @@ def parse_gyms(args, gym_responses, wh_update_queue, db_update_queue):
                 'gender': pokemon.pokemon_display.gender,
                 'form': pokemon.pokemon_display.form,
                 'costume': pokemon.pokemon_display.costume,
-                'weather_boosted_condition': pokemon.pokemon_display.weather_boosted_condition,
+                'weather_boosted_condition': (pokemon.pokemon_display
+                                              .weather_boosted_condition),
                 'shiny': pokemon.pokemon_display.shiny,
                 'last_seen': datetime.utcnow(),
             }
@@ -3807,10 +3822,13 @@ def database_migrate(db, old_ver):
             'INSERT INTO `gymmember` ' +
             'SELECT * FROM `gymmember_old`;')
         db.execute_sql(
-            'INSERT INTO `gympokemon` SELECT pokemon_uid, pokemon_id, cp,trainer_name, ' +
-            'num_upgrades ,move_1, move_2, height, weight, stamina, stamina_max, ' +
-            'cp_multiplier, additional_cp_multiplier, iv_defense, iv_stamina, iv_attack, gender, ' +
-            'form,costume, weather_boosted_condition, shiny, last_seen FROM `gympokemon_old`;')
+            'INSERT INTO `gympokemon` ' + 
+            'SELECT pokemon_uid, pokemon_id, cp,trainer_name, ' +
+            'num_upgrades ,move_1, move_2, height, weight, stamina,'
+            'stamina_max, cp_multiplier, additional_cp_multiplier,' +
+            'iv_defense, iv_stamina, iv_attack, gender, ' +
+            'form,costume, weather_boosted_condition, shiny, last_seen ' +
+            'FROM `gympokemon_old`;')
         db.execute_sql(
             'INSERT INTO `scanspawnpoint` SELECT ' +
             'CONV(scannedlocation_id, 16,10) as scannedlocation_id, ' +

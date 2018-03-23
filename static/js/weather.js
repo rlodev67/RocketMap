@@ -1,3 +1,10 @@
+// Globales variables
+const alertTexts = {
+    1: 'Moderate',
+    2: 'Extreme'
+}
+
+
 /**
  * Parses info about weather cell and draws icon
  * @param i index from $.each()

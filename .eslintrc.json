@@ -80,7 +80,6 @@
     "getPokemonRarity": true,
     "updatePokemonRarities": true,
     "generateImages": true,
-    "getPokemonRawIconUrl": true
 
   }
 }

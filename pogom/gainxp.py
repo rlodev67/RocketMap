@@ -105,12 +105,12 @@ def is_ditto(args, pgacc, p):
     if catch_result['catch_status'] == 'success':
         if int(catch_result['pid']) == DITTO_POKEDEX_ID:
             logmsg = u'GXP: Successfully caught a Ditto disguised '\
-            'as {}! Needed {} attempts.'
+                      'as {}! Needed {} attempts.'
             captured_pokemon_name = get_pokemon_name(DITTO_POKEDEX_ID)
             got_ditto = True
         else:
-            logmsg = u'GXP: Successfully caught a ' +
-            'regular {} after {} attempts.'
+            logmsg = u'GXP: Successfully caught a '\
+                      'regular {} after {} attempts.'
         log.info(logmsg.format(pokemon_name, catch_result['attempts']))
     else:
         log.info("GXP: Failed catching {}: {} Attempts: {}".format(

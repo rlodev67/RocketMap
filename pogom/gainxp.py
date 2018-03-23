@@ -14,10 +14,8 @@ from pgoapi.protos.pogoprotos.inventory.item.item_id_pb2 import (
 
 from pogom.account import (log, spin_pokestop_request,
                            encounter_pokemon_request,
-                           pokestop_spinnable,
-                           incubate_eggs, clear_inventory_request,
-                           request_release_pokemon)
-from pogom.utils import get_pokemon_name, in_radius
+                           pokestop_spinnable, clear_inventory_request)
+from pogom.utils import get_pokemon_name
 
 log = logging.getLogger(__name__)
 
@@ -106,7 +104,6 @@ def is_ditto(args, pgacc, p):
         if int(catch_result['pid']) == DITTO_POKEDEX_ID:
             logmsg = u'GXP: Successfully caught a Ditto disguised '\
                       'as {}! Needed {} attempts.'
-            captured_pokemon_name = get_pokemon_name(DITTO_POKEDEX_ID)
             got_ditto = True
         else:
             logmsg = u'GXP: Successfully caught a '\

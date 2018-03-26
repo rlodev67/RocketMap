@@ -464,21 +464,23 @@ class Pogom(Flask):
 
         if (request.args.get('pokemon', 'true') == 'true' and
                 not args.no_pokemon):
-            # Exclude ids of Pokemon that are hidden.	
-            eids = []	
-            request_eids = request.args.get('eids')	
-            if request_eids:	
+            # Exclude ids of Pokemon that are hidden.
+            eids = []
+            request_eids = request.args.get('eids')
+            if request_eids:
                 eids = {int(i) for i in request_eids.split(',')}
             if request.args.get('ids'):
                 request_ids = request.args.get('ids').split(',')
                 ids = [int(x) for x in request_ids if int(x) not in eids]
                 d['pokemons'] = convert_pokemon_list(
-                    Pokemon.get_active_by_id(ids, swLat, swLng, neLat, neLng))
+                    Pokemon.get_active_by_id(
+                        ids, swLat, swLng, neLat, neLng))
             elif lastpokemon != 'true':
                 # If this is first request since switch on, load
                 # all pokemon on screen.
                 d['pokemons'] = convert_pokemon_list(
-                    Pokemon.get_active(swLat, swLng, neLat, neLng, exclude=eids))
+                    Pokemon.get_active(
+                        swLat, swLng, neLat, neLng, exclude=eids))
             else:
                 # If map is already populated only request modified Pokemon
                 # since last request time.
@@ -589,10 +591,10 @@ class Pogom(Flask):
                   args.status_page_password):
                 max_status_age = args.status_page_filter
                 if max_status_age > 0:
-                    d['main_workers'] = MainWorker.get_recent(max_status_age)	
-                    d['workers'] = WorkerStatus.get_recent(max_status_age)	
-                else:	
-                    d['main_workers'] = MainWorker.get_all()	
+                    d['main_workers'] = MainWorker.get_recent(max_status_age)
+                    d['workers'] = WorkerStatus.get_recent(max_status_age)
+                else:
+                    d['main_workers'] = MainWorker.get_all()
                     d['workers'] = WorkerStatus.get_all()
 
         if request.args.get('weather', 'false') == 'true':
@@ -729,10 +731,10 @@ class Pogom(Flask):
             d['login'] = 'ok'
             max_status_age = args.status_page_filter
             if max_status_age > 0:
-                d['main_workers'] = MainWorker.get_recent(max_status_age)	
-                d['workers'] = WorkerStatus.get_recent(max_status_age)	
-            else:	
-                d['main_workers'] = MainWorker.get_all()	
+                d['main_workers'] = MainWorker.get_recent(max_status_age)
+                d['workers'] = WorkerStatus.get_recent(max_status_age)
+            else:
+                d['main_workers'] = MainWorker.get_all()
                 d['workers'] = WorkerStatus.get_all()
             d['hashkeys'] = HashKeys.get_obfuscated_keys()
         else:

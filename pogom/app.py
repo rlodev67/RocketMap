@@ -486,7 +486,8 @@ class Pogom(Flask):
                 # since last request time.
                 d['pokemons'] = convert_pokemon_list(
                     Pokemon.get_active(
-                        swLat, swLng, neLat, neLng, timestamp=timestamp, exclude=eids))
+                        swLat, swLng, neLat, neLng,
+                        timestamp=timestamp, exclude=eids))
                 if newArea:
                     # If screen is moved add newly uncovered Pokemon to the
                     # ones that were modified since last request time.

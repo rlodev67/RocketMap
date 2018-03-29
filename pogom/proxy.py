@@ -118,7 +118,7 @@ def get_proxy_test_status(proxy, future_ptc, future_niantic):
     if ptc_response:
         ptc_response.close()
     if niantic_response:
-    niantic_response.close()
+        niantic_response.close()
 
     return (proxy_error, check_result)
 

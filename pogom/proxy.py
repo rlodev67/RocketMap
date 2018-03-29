@@ -269,16 +269,19 @@ def check_proxies(args, proxies, ptc = None):
     # the # of retries to allow for proxies.
     ptc_session = None
     niantic_session = None
+    checked_proxies = ""
     if ptc:
         ptc_session = get_async_requests_session(
             args.proxy_test_retries,
             args.proxy_test_backoff_factor,
             proxy_concurrency)
+        checked_proxies = "ptc"
     else:
         niantic_session = get_async_requests_session(
             args.proxy_test_retries,
             args.proxy_test_backoff_factor,
             proxy_concurrency)
+        checked_proxies = "pogo"
 
     # List to hold background workers.
     proxy_queue = []
@@ -330,12 +333,11 @@ def check_proxies(args, proxies, ptc = None):
                        check_results[check_result_wrong] +
                        check_results[check_result_exception] +
                        check_results[check_result_empty])
-        log.info('Proxy check completed. Working: %d, banned: %d,'
+        log.info('%s proxies check completed. Working: %d, banned: %d,'
                  + ' timeout: %d, other fails: %d of total %d configured.',
-                 num_working_proxies, check_results[check_result_banned],
-                 check_results[check_result_timeout],
-                 other_fails,
-                 total_proxies)
+                 checked_proxies,num_working_proxies,
+                 check_results[check_result_banned], check_results[check_result_timeout],
+                 other_fails, total_proxies)
 
         return working_proxies
 

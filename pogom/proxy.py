@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 # Last used proxy for round-robin.
 last_proxy = -1
+ptc_last_proxy = -1
 
 # Proxy check result constants.
 check_result_ok = 0
@@ -40,8 +41,13 @@ def get_proxy_test_status(proxy, future_ptc, future_niantic):
 
     # Make sure both requests are completed.
     try:
-        ptc_response = future_ptc.result()
-        niantic_response = future_niantic.result()
+        if future_ptc and future_niantic:
+            ptc_response = future_ptc.result()
+            niantic_response = future_niantic.result()
+        elif future_ptc:
+            ptc_response = future_ptc.result()
+        else:
+            niantic_response = future_niantic.result()
     except requests.exceptions.ConnectTimeout:
         proxy_error = ('Connection timeout for'
                        + ' proxy {}.').format(proxy)
@@ -58,31 +64,60 @@ def get_proxy_test_status(proxy, future_ptc, future_niantic):
         return (proxy_error, check_result)
 
     # Evaluate response status code.
-    ptc_status = ptc_response.status_code
-    niantic_status = niantic_response.status_code
+    if ptc_response:
+        ptc_status = ptc_response.status_code
+    if niantic_response:
+        niantic_status = niantic_response.status_code
 
     banned_status_codes = [403, 409]
 
-    if niantic_status == 200 and ptc_status == 200:
-        log.debug('Proxy %s is ok.', proxy)
-    elif (niantic_status in banned_status_codes or
-          ptc_status in banned_status_codes):
-        proxy_error = ('Proxy {} is banned -'
-                       + ' got PTC status code: {}, Niantic status'
-                       + ' code: {}.').format(proxy,
-                                              ptc_status,
-                                              niantic_status)
-        check_result = check_result_banned
+    if ptc_status and niantic_status:
+        if niantic_status == 200 and ptc_status == 200:
+            log.debug('Proxy %s is ok.', proxy)
+        elif (niantic_status in banned_status_codes or
+              ptc_status in banned_status_codes):
+            proxy_error = ('Proxy {} is banned -'
+                           + ' got PTC status code: {}, Niantic status'
+                           + ' code: {}.').format(proxy,
+                                                  ptc_status,
+                                                  niantic_status)
+            check_result = check_result_banned
+        else:
+            proxy_error = ('Wrong status codes -'
+                           + ' PTC: {},'
+                           + ' Niantic: {}.').format(ptc_status,
+                                                     niantic_status)
+            check_result = check_result_wrong
+    elif ptc_status:
+        if ptc_status == 200:
+            log.debug('Proxy %s is ok for ptc.', proxy)
+        elif (ptc_status in banned_status_codes):
+            proxy_error = ('Proxy {} is banned -'
+                           + ' got PTC status code: {}').format(proxy,
+                                                                ptc_status)
+            check_result = check_result_banned
+        else:
+            proxy_error = ('Wrong status codes -'
+                           + ' PTC: {}').format(ptc_status)
+            check_result = check_result_wrong
     else:
-        proxy_error = ('Wrong status codes -'
-                       + ' PTC: {},'
-                       + ' Niantic: {}.').format(ptc_status,
-                                                 niantic_status)
-        check_result = check_result_wrong
+        if niantic_status == 200:
+            log.debug('Proxy %s is ok for pogo.', proxy)
+        elif (niantic_status in banned_status_codes):
+            proxy_error = ('Proxy {} is banned -'
+                           + ' got pogo status code: {}').format(proxy,
+                                                                 niantic_status)
+            check_result = check_result_banned
+        else:
+            proxy_error = ('Wrong status codes -'
+                           + ' pogo: {}').format(ptc_status)
+            check_result = check_result_wrong
 
     # Explicitly release connection back to the pool, because we don't need
     # or want to consume the content.
-    ptc_response.close()
+    if ptc_response:
+        ptc_response.close()
+    if niantic_response:
     niantic_response.close()
 
     return (proxy_error, check_result)
@@ -99,80 +134,116 @@ def start_request_futures(ptc_session, niantic_session, proxy, timeout):
 
     log.debug('Checking proxy: %s.', proxy)
 
-    # Send request to pokemon.com.
-    future_ptc = ptc_session.get(
-        proxy_test_ptc_url,
-        proxies={'http': proxy, 'https': proxy},
-        timeout=timeout,
-        headers={'Host': 'sso.pokemon.com',
-                 'Connection': 'close',
-                 'Accept': '*/*',
-                 'User-Agent': 'pokemongo/0 CFNetwork/893.14.2 Darwin/17.3.0',
-                 'Accept-Language': 'en-us',
-                 'Accept-Encoding': 'br, gzip, deflate',
-                 'X-Unity-Version': '2017.1.2f1'},
-        background_callback=__proxy_check_completed,
-        stream=True)
-
-    # Send request to nianticlabs.com.
-    future_niantic = niantic_session.get(
-        proxy_test_url,
-        proxies={'http': proxy, 'https': proxy},
-        timeout=timeout,
-        headers={'Host': 'pgorelease.nianticlabs.com',
-                 'Connection': 'close',
-                 'Accept': '*/*',
-                 'User-Agent': 'pokemongo/0 CFNetwork/893.14.2 Darwin/17.3.0',
-                 'Accept-Language': 'en-us',
-                 'Accept-Encoding': 'br, gzip, deflate',
-                 'X-Unity-Version': '2017.1.2f1'},
-        background_callback=__proxy_check_completed,
-        stream=True)
+    future_ptc = None
+    future_niantic = None
+    # Send request to pokemon.com if niantic
+    if ptc_session:
+        future_ptc = ptc_session.get(
+            proxy_test_ptc_url,
+            proxies={'http': proxy, 'https': proxy},
+            timeout=timeout,
+            headers={'Host': 'sso.pokemon.com',
+                     'Connection': 'close',
+                     'Accept': '*/*',
+                     'User-Agent': 'pokemongo/0 CFNetwork/893.14.2 Darwin/17.3.0',
+                     'Accept-Language': 'en-us',
+                     'Accept-Encoding': 'br, gzip, deflate',
+                     'X-Unity-Version': '2017.1.2f1'},
+            background_callback=__proxy_check_completed,
+            stream=True)
+    # Send request to nianticlabs.com if pogo
+    if niantic_session:
+        future_niantic = niantic_session.get(
+            proxy_test_url,
+            proxies={'http': proxy, 'https': proxy},
+            timeout=timeout,
+            headers={'Host': 'pgorelease.nianticlabs.com',
+                     'Connection': 'close',
+                     'Accept': '*/*',
+                     'User-Agent': 'pokemongo/0 CFNetwork/893.14.2 Darwin/17.3.0',
+                     'Accept-Language': 'en-us',
+                     'Accept-Encoding': 'br, gzip, deflate',
+                     'X-Unity-Version': '2017.1.2f1'},
+            background_callback=__proxy_check_completed,
+            stream=True)
 
     # Return futures.
     return (future_ptc, future_niantic)
 
 
 # Load proxies and return a list.
-def load_proxies(args):
+def load_proxies(args, ptc = None):
     proxies = []
 
-    # Load proxies from the file. Override args.proxy if specified.
-    if args.proxy_file is not None:
-        log.info('Loading proxies from file.')
-
-        with open(args.proxy_file) as f:
-            for line in f:
-                stripped = line.strip()
-
-                # Ignore blank lines and comment lines.
-                if len(stripped) == 0 or line.startswith('#'):
-                    continue
-
-                proxies.append(stripped)
-
-        log.info('Loaded %d proxies.', len(proxies))
-
-        if len(proxies) == 0:
-            log.error('Proxy file was configured but ' +
-                      'no proxies were loaded. Aborting.')
-            sys.exit(1)
-    elif args.proxy:
-        if isinstance(args.proxy, list):
-            proxies = args.proxy
-        else:
-            proxies.append(args.proxy)
-
-    # No proxies - no cookies.
-    if (proxies is None) or (len(proxies) == 0):
-        log.info('No proxies are configured.')
-        return None
-
+    # If it's pogo proxy.
+    if not ptc:
+        # Load proxies from the file. Override args.proxy if specified.
+        if args.proxy_file is not None:
+            log.info('Loading pogo proxies from file.')
+        
+            with open(args.proxy_file) as f:
+                for line in f:
+                    stripped = line.strip()
+        
+                    # Ignore blank lines and comment lines.
+                    if len(stripped) == 0 or line.startswith('#'):
+                        continue
+        
+                    proxies.append(stripped)
+        
+            log.info('Loaded %d pogo proxies.', len(proxies))
+        
+            if len(proxies) == 0:
+                log.error('Pogo proxy file was configured but ' +
+                          'no proxies were loaded. Aborting.')
+                sys.exit(1)
+        elif args.proxy:
+            if isinstance(args.proxy, list):
+                proxies = args.proxy
+            else:
+                proxies.append(args.proxy)
+        
+        # No proxies - no cookies.
+        if (proxies is None) or (len(proxies) == 0):
+            log.info('No proxies are configured.')
+            return None
+    # Else it's ptc proxy
+    else:
+        # Load proxies from the file. Override args.proxy if specified.
+        if args.ptc_proxy_file is not None:
+            log.info('Loading ptc proxies from file.')
+        
+            with open(args.ptc_proxy_file) as f:
+                for line in f:
+                    stripped = line.strip()
+        
+                    # Ignore blank lines and comment lines.
+                    if len(stripped) == 0 or line.startswith('#'):
+                        continue
+        
+                    proxies.append(stripped)
+        
+            log.info('Loaded %d ptc proxies.', len(proxies))
+        
+            if len(proxies) == 0:
+                log.error('ptc poxy file was configured but ' +
+                          'no proxies were loaded. Aborting.')
+                sys.exit(1)
+        elif args.ptc_proxy:
+            if isinstance(args.ptc_proxy, list):
+                proxies = args.ptc_proxy
+            else:
+                proxies.append(args.ptc_proxy)
+        
+        # No proxies - no cookies.
+        if (proxies is None) or (len(proxies) == 0):
+            log.info('No ptc proxies are configured.')
+            return None
     return proxies
 
 
 # Check all proxies and return a working list with proxies.
-def check_proxies(args, proxies):
+def check_proxies(args, proxies, ptc = None):
     total_proxies = len(proxies)
 
     # Store counter per result type.
@@ -193,14 +264,18 @@ def check_proxies(args, proxies):
     # Get persistent session per host.
     # TODO: Rework API request wrapper so requests are retried, then increase
     # the # of retries to allow for proxies.
-    ptc_session = get_async_requests_session(
-        args.proxy_test_retries,
-        args.proxy_test_backoff_factor,
-        proxy_concurrency)
-    niantic_session = get_async_requests_session(
-        args.proxy_test_retries,
-        args.proxy_test_backoff_factor,
-        proxy_concurrency)
+    ptc_session = None
+    niantic_session = None
+    if ptc:
+        ptc_session = get_async_requests_session(
+            args.proxy_test_retries,
+            args.proxy_test_backoff_factor,
+            proxy_concurrency)
+    else:
+        niantic_session = get_async_requests_session(
+            args.proxy_test_retries,
+            args.proxy_test_backoff_factor,
+            proxy_concurrency)
 
     # List to hold background workers.
     proxy_queue = []
@@ -267,21 +342,37 @@ def proxies_refresher(args):
     while True:
         # Wait before refresh, because initial refresh is done at startup.
         time.sleep(args.proxy_refresh)
-
-        try:
-            proxies = load_proxies(args)
-
-            if not args.proxy_skip_check:
-                proxies = check_proxies(args, proxies)
-
-            # If we've arrived here, we're guaranteed to have at least one
-            # working proxy. check_proxies stops the process if no proxies
-            # are left.
-
-            args.proxy = proxies
-            log.info('Regular proxy refresh complete.')
-        except Exception as e:
-            log.exception('Exception while refreshing proxies: %s.', e)
+        
+        if args.proxy_file:
+            try:
+                proxies = load_proxies(args)
+            
+                if not args.proxy_skip_check:
+                    proxies = check_proxies(args, proxies)
+            
+                # If we've arrived here, we're guaranteed to have at least one
+                # working proxy. check_proxies stops the process if no proxies
+                # are left.
+            
+                args.proxy = proxies
+                log.info('Regular pogo proxy refresh complete.')
+            except Exception as e:
+                log.exception('Exception while refreshing pogo proxies: %s.', e)
+        if args.ptc_proxy_file:
+            try:
+                proxies = load_proxies(args, ptc = True)
+            
+                if not args.proxy_skip_check:
+                    proxies = check_proxies(args, proxies)
+            
+                # If we've arrived here, we're guaranteed to have at least one
+                # working proxy. check_proxies stops the process if no proxies
+                # are left.
+            
+                args.proxy = proxies
+                log.info('Regular pogo proxy refresh complete.')
+            except Exception as e:
+                log.exception('Exception while refreshing pogo proxies: %s.', e)
 
 
 # Provide new proxy for a search thread.
@@ -305,14 +396,38 @@ def get_new_proxy(args):
 
     return lp, args.proxy[lp]
 
+# Provide new proxy for a search thread.
+def get_ptc_new_proxy(args):
+    global ptc_last_proxy
+
+    # If round - simply get next proxy.
+    if (args.proxy_rotation == 'round'):
+        if ptc_last_proxy >= len(args.ptc_proxy) - 1:
+            ptc_last_proxy = 0
+        else:
+            ptc_last_proxy = ptc_last_proxy + 1
+        lp = ptc_last_proxy
+    # If random - get random one.
+    elif (args.proxy_rotation == 'random'):
+        lp = randint(0, len(args.ptc_proxy) - 1)
+    else:
+        log.warning('Parameter -pxo/--proxy-rotation has wrong value. ' +
+                    'Use only first proxy.')
+        lp = 0
+
+    return lp, args.ptc_proxy[lp]
+
 
 def initialize_proxies(args):
     # Processing proxies if set (load from file, check and overwrite old
     # args.proxy with new working list).
     args.proxy = load_proxies(args)
+    args.ptc_proxy = load_proxies(args, ptc = True)
 
     if args.proxy and not args.proxy_skip_check:
         args.proxy = check_proxies(args, args.proxy)
+    if args.ptc_proxy and not args.proxy_skip_check:
+        args.ptc_proxy = check_proxies(args, args.ptc_proxy)
 
     # Run periodical proxy refresh thread.
     if (args.proxy_file is not None) and (args.proxy_refresh > 0):

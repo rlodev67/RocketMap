@@ -1,3 +1,22 @@
+Skip to content
+This repository
+Search
+Pull requests
+Issues
+Marketplace
+Explore
+ @rlodev67
+Sign out
+0
+0 51 rlodev67/RocketMap
+forked from SenorKarlos/RocketMap
+ Code  Pull requests 0  Projects 0  Wiki  Insights  Settings
+RocketMap/pogom/search.py
+2cd602b  3 days ago
+@rlodev67 rlodev67 Solve all travis (#97)
+@sebastienvercammen @friscoMad @justsomedudeonthenet @FrostTheFox @chuyskywalker @onilton @neskk @rlodev67 @medghaim @invisiblek @sLoPPydrive @SiteEffect @Obihoernchen @Alderon86 @wcastello @marauder37 @Artifice @chowderchow @tim95030 @SilverC @maddhatter @KyleBoyer @hazanjon @jnovack @Janglinator @Xcelled
+     
+1569 lines (1333 sloc)  62.6 KB
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
@@ -608,6 +627,7 @@ def search_overseer_thread(args, new_location_queue, control_flags, heartb,
         # Set proxy for each worker, using round robin.
         proxy_display = 'No'
         proxy_url = False    # Will be assigned inside a search thread.
+        ptc_proxy_url = False    # Will be assigned inside a search thread.
 
         workerId = 'Worker {:03}'.format(i)
         threadStatus[workerId] = {
@@ -621,6 +641,7 @@ def search_overseer_thread(args, new_location_queue, control_flags, heartb,
             'username': '',
             'proxy_display': proxy_display,
             'proxy_url': proxy_url,
+            'ptc_proxy_url': ptc_proxy_url,
         }
         argset = (
             args, account_queue, account_sets, account_failures,
@@ -1526,10 +1547,8 @@ def check_forced_version(args, api_check_time, api_watchdog_flag):
 
 def get_api_version(args):
     """Retrieve forced API version by Niantic
-
     Args:
         args: Command line arguments
-
     Returns:
         API version string. False if request failed.
     """

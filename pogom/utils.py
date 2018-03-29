@@ -348,7 +348,10 @@ def get_args():
                               'This is useful for events that extend lure ' +
                               'duration.'), type=int, default=30)
     parser.add_argument('-px', '--proxy',
-                        help='Proxy url (e.g. socks5://127.0.0.1:9050)',
+                        help='POGO Proxy url (e.g. socks5://127.0.0.1:9050)',
+                        action='append')
+    parser.add_argument('-ptcpx', '--ptc-proxy',
+                        help='PTC Proxy url (e.g. socks5://127.0.0.1:9050)',
                         action='append')
     parser.add_argument('-pxsc', '--proxy-skip-check',
                         help='Disable checking of proxies before start.',
@@ -372,8 +375,11 @@ def get_args():
                               '(index or full). To be used with -ps.'),
                         type=str, default='index')
     parser.add_argument('-pxf', '--proxy-file',
-                        help=('Load proxy list from text file (one proxy ' +
+                        help=('Load POGO proxy list from text file (one proxy ' +
                               'per line), overrides -px/--proxy.'))
+    parser.add_argument('-ptcpxf', '--ptc-proxy-file',
+                        help=('Load PTC proxy list from text file (one proxy ' +
+                              'per line), overrides -ptcpx/--ptc-proxy.'))
     parser.add_argument('-pxr', '--proxy-refresh',
                         help=('Period of proxy file reloading, in seconds. ' +
                               'Works only with -pxf/--proxy-file. ' +

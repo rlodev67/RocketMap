@@ -608,7 +608,7 @@ def search_overseer_thread(args, new_location_queue, control_flags, heartb,
         # Set proxy for each worker, using round robin.
         proxy_display = 'No'
         proxy_url = False    # Will be assigned inside a search thread.
-        ptc_proxy_url = False    # Will be assigned inside a search thread.
+        proxy_url_ptc = False    # Will be assigned inside a search thread.
 
         workerId = 'Worker {:03}'.format(i)
         threadStatus[workerId] = {
@@ -622,7 +622,7 @@ def search_overseer_thread(args, new_location_queue, control_flags, heartb,
             'username': '',
             'proxy_display': proxy_display,
             'proxy_url': proxy_url,
-            'ptc_proxy_url': ptc_proxy_url,
+            'proxy_url_ptc': proxy_url_ptc,
         }
         argset = (
             args, account_queue, account_sets, account_failures,

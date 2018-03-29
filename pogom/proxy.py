@@ -368,7 +368,7 @@ def proxies_refresher(args):
                 proxies = load_proxies(args, ptc = True)
             
                 if not args.proxy_skip_check:
-                    proxies = check_proxies(args, proxies)
+                    proxies = check_proxies(args, proxies, ptc = True)
             
                 # If we've arrived here, we're guaranteed to have at least one
                 # working proxy. check_proxies stops the process if no proxies
@@ -432,7 +432,7 @@ def initialize_proxies(args):
     if args.proxy and not args.proxy_skip_check:
         args.proxy = check_proxies(args, args.proxy)
     if args.ptc_proxy and not args.proxy_skip_check:
-        args.ptc_proxy = check_proxies(args, args.ptc_proxy)
+        args.ptc_proxy = check_proxies(args, args.ptc_proxy, ptc = True)
 
     # Run periodical proxy refresh thread.
     if (args.proxy_file is not None) and (args.proxy_refresh > 0):

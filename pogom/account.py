@@ -106,14 +106,14 @@ def setup_mrmime_account(args, status, account):
     if args.ptc_proxy:
         # If proxy is not assigned yet or if proxy-rotation is defined
         # - query for new proxy.
-        if ((not status['ptc_proxy_url']) or
+        if ((not status['proxy_url_ptc']) or
                 (args.proxy_rotation != 'none')):
 
-            proxy_num, status['ptc_proxy_url'] = get_ptc_new_proxy(args)
+            proxy_num, status['proxy_url_ptc'] = get_ptc_new_proxy(args)
             if args.ptc_proxy_display.upper() != 'FULL':
                 status['ptc_proxy_display'] = proxy_num
             else:
-                status['ptc_proxy_display'] = status['ptc_proxy_url']
+                status['ptc_proxy_display'] = status['proxy_url_ptc']
 
     if status['proxy_url']:
         log.debug('Using pogo proxy %s', status['proxy_url'])
@@ -125,15 +125,15 @@ def setup_mrmime_account(args, status, account):
                 'enable proxy rotation.',
                 status['proxy_url'])
 
-    if status['ptc_proxy_url']:
-        log.debug('Using ptc proxy %s', status['ptc_proxy_url'])
-        pgacc.ptc_proxy_url = status['ptc_proxy_url']
-        if (status['ptc_proxy_url'] not in args.ptc_proxy):
+    if status['proxy_url_ptc']:
+        log.debug('Using ptc proxy %s', status['proxy_url_ptc'])
+        pgacc.proxy_url_ptc = status['proxy_url_ptc']
+        if (status['proxy_url_ptc'] not in args.ptc_proxy):
             log.warning(
                 'Tried replacing ptc proxy %s with a new proxy, but proxy ' +
                 'rotation is disabled ("none"). If this isn\'t intentional, ' +
                 'enable proxy rotation.',
-                status['ptc_proxy_url'])
+                status['proxy_url_ptc'])
 
     return pgacc
 

@@ -63,6 +63,9 @@ def get_proxy_test_status(proxy, future_ptc, future_niantic):
     if proxy_error:
         return (proxy_error, check_result)
 
+    ptc_status = None
+    niantic_status = None
+
     # Evaluate response status code.
     if ptc_response:
         ptc_status = ptc_response.status_code

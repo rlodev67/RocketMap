@@ -89,7 +89,7 @@ def setup_mrmime_account(args, status, account):
 
     account['pgacc'] = pgacc
 
-    # New account - new proxy.
+    # New account - new pogo proxy.
     if args.proxy:
         # If proxy is not assigned yet or if proxy-rotation is defined
         # - query for new proxy.
@@ -102,15 +102,38 @@ def setup_mrmime_account(args, status, account):
             else:
                 status['proxy_display'] = status['proxy_url']
 
+    # New account - new ptc proxy.
+    if args.ptc_proxy:
+        # If proxy is not assigned yet or if proxy-rotation is defined
+        # - query for new proxy.
+        if ((not status['ptc_proxy_url']) or
+                (args.proxy_rotation != 'none')):
+
+            proxy_num, status['ptc_proxy_url'] = get_ptc_new_proxy(args)
+            if args.ptc_proxy_display.upper() != 'FULL':
+                status['ptc_proxy_display'] = proxy_num
+            else:
+                status['ptc_proxy_display'] = status['ptc_proxy_url']
+
     if status['proxy_url']:
-        log.debug('Using proxy %s', status['proxy_url'])
+        log.debug('Using pogo proxy %s', status['proxy_url'])
         pgacc.proxy_url = status['proxy_url']
         if (status['proxy_url'] not in args.proxy):
             log.warning(
-                'Tried replacing proxy %s with a new proxy, but proxy ' +
+                'Tried replacing pogo proxy %s with a new proxy, but proxy ' +
                 'rotation is disabled ("none"). If this isn\'t intentional, ' +
                 'enable proxy rotation.',
                 status['proxy_url'])
+
+    if status['ptc_proxy_url']:
+        log.debug('Using ptc proxy %s', status['ptc_proxy_url'])
+        pgacc.ptc_proxy_url = status['ptc_proxy_url']
+        if (status['ptc_proxy_url'] not in args.ptc_proxy):
+            log.warning(
+                'Tried replacing ptc proxy %s with a new proxy, but proxy ' +
+                'rotation is disabled ("none"). If this isn\'t intentional, ' +
+                'enable proxy rotation.',
+                status['ptc_proxy_url'])
 
     return pgacc
 

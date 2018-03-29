@@ -11,7 +11,7 @@ from mrmime.pogoaccount import POGOAccount
 
 from pogom.pgpool import pgpool_request_accounts, pgpool_release_account
 from .utils import in_radius, distance, now, get_pokemon_name
-from .proxy import get_new_proxy
+from .proxy import get_new_proxy, get_ptc_new_proxy
 
 log = logging.getLogger(__name__)
 
